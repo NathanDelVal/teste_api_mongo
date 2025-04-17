@@ -63,11 +63,11 @@ app.put('/:id', async(req, res) => {
     res.send(collection);
 });
 
-app.delete('/', async(req, res) => {
+app.delete('/:id', async(req, res) => {
     connection = await run();
     let {db, collection} = connection;
 
-    collection = await collection.deleteOne(req.body)
+    collection = await collection.deleteOne({ _id: new ObjectId(req.params.id)})
     res.send(collection)
 });
 
