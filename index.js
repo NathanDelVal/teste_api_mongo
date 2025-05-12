@@ -5,11 +5,11 @@ const uri = "mongodb+srv://admin:Riot!2007@cluster0.hasqapk.mongodb.net/?retryWr
 const client = new MongoClient(uri);
 
 //async await
-async function run() {
+async function run(coll) {
     try {
         await client.connect();
         const db = client.db('sample_mflix');
-        const collection = db.collection('movies');
+        const collection = db.collection(coll);
 
         return {db, collection};
 
@@ -25,7 +25,7 @@ const app = express();
 
 // Define routes before starting the server
 app.get('/', async (req, res) => {
-    connection = await run();
+    connection = await run('movies');
     const {db, collection} = connection;
     console.log(await collection.findOne());
     await client.close();
