@@ -13,7 +13,7 @@ app.use(express.json());
 async function run(coll) {
     try {
         await client.connect();
-        const db = client.db('sample_mflix');
+        const db = client.db('ranking_cidades');
         const collection = db.collection(coll);
 
         return {db, collection};
@@ -26,30 +26,41 @@ async function run(coll) {
 
 // Define routes before starting the server
 app.get('/', async (req, res) => {
-    let connection = await run('movies');
+    let connection = await run('ranking_cidades2');
     let {db, collection} = connection;
     collection = await collection.find().toArray()
-    res.send(collection.length);
+    const rankings = collection[0].rankings;
+    res.send(rankings);
     await client.close();
 });
 
 app.get('/:id', async (req, res) => {
-    let connection = await run('movies');
+    let connection = await run('ranking_cidades2');
     let {db, collection} = connection;
 
-    collection = await collection.findOne({ _id: new ObjectId(req.params.id)})
-    res.send(collection)
+    let rankings = await collection.find().toArray()
+    rankings = rankings[0].rankings;
+    
+    let targeted_ranking = rankings.map((el) => {
+        return {
+            name: el.city,
+            [req.params.id]: el[req.params.id]
+        }
+    })
+
+    //collection = await collection.findOne({ _id: new ObjectId(req.params.id)})
+    res.send(targeted_ranking)
 })
 
 app.post('/', async(req, res) => {
-    connection = await run('movies');
+    connection = await run('ranking_cidades2');
     let {db, collection} = connection;
     collection = await collection.insertOne(req.body)
     res.send(collection)
 });
 
 app.put('/:id', async(req, res) => {
-    connection = await run('movies');
+    connection = await run('ranking_cidades2');
     let {db, collection} = connection;
 
    collection = await collection.updateOne({
@@ -64,7 +75,7 @@ app.put('/:id', async(req, res) => {
 });
 
 app.delete('/:id', async(req, res) => {
-    connection = await run('movies');
+    connection = await run('ranking_cidades2');
     let {db, collection} = connection;
 
     collection = await collection.deleteOne({ _id: new ObjectId(req.params.id)})
