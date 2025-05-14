@@ -1,5 +1,6 @@
 const express = require("express");
 const { MongoClient, ObjectId } = require('mongodb');
+const removeAccents = require("remove-accents");
 
 const uri = "mongodb+srv://admin:Riot!2007@cluster0.hasqapk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const client = new MongoClient(uri);
@@ -62,7 +63,7 @@ app.get('/city/:name', async(req, res) => {
     const rankings = collection[0].rankings;
     
     let targeted_city = rankings.find((el) => {
-        return el.codenome === req.params.name
+        return removeAccents(el.city).toLowerCase().replaceAll(" ","_") === req.params.name
     })
     res.send(targeted_city)
 });
