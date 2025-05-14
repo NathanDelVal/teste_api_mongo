@@ -46,6 +46,8 @@ app.get('/:id', async (req, res) => {
             name: el.city,
             [req.params.id]: el[req.params.id]
         }
+    }).sort((a, b) => {
+        return a[req.params.id] - b[req.params.id]
     })
 
     //collection = await collection.findOne({ _id: new ObjectId(req.params.id)})
