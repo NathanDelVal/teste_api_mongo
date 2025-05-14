@@ -34,7 +34,7 @@ app.get('/', async (req, res) => {
     await client.close();
 });
 
-app.get('/:id', async (req, res) => {
+app.get('/ranks/:id', async (req, res) => {
     let connection = await run('ranking_cidades2');
     let {db, collection} = connection;
 
@@ -53,6 +53,19 @@ app.get('/:id', async (req, res) => {
     //collection = await collection.findOne({ _id: new ObjectId(req.params.id)})
     res.send(targeted_ranking)
 })
+
+app.get('/city/:name', async(req, res) => {
+    let connection = await run('ranking_cidades2');
+    let {db, collection} = connection;
+
+    collection = await collection.find().toArray()
+    const rankings = collection[0].rankings;
+    
+    let targeted_city = rankings.find((el) => {
+        return el.codenome === req.params.name
+    })
+    res.send(targeted_city)
+});
 
 app.post('/', async(req, res) => {
     connection = await run('ranking_cidades2');
